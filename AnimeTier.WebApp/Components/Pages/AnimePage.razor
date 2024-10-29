@@ -1,0 +1,59 @@
+﻿@page "/anime"
+@inject HttpClient client
+@inject NotificationService NotificationService
+
+<PageTitle>Anime Tier List</PageTitle>
+
+<h3>Anime Grid List</h3>
+
+<RadzenStack>
+
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1rem">
+            <RadzenButton class="" Icon="add_circle" Text="Add Anime" ButtonStyle="ButtonStyle.Primary" />
+            <RadzenButton Click=@(args => OnClickRefresh("Anime List Refreshed.")) Icon="refresh" Text="Refresh"    ButtonStyle="ButtonStyle.Base" />
+    </RadzenStack>
+    
+    <RadzenStack>
+        <RadzenDataGrid @bind-Value=@selectedAnime KeyProperty="Id" Data="@animeQ" AllowAlternatingRows="true"      FilterMode="FilterMode.Simple" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"        FilterPopupRenderMode="PopupRenderMode.OnDemand" AllowSorting="true" AllowFiltering="true" AllowPaging="true"      PageSize="10" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"     LogicalFilterOperator="LogicalFilterOperator.Or">
+            <Columns>
+                <RadzenDataGridColumn Property="@nameof(Anime.Id)" Title="ID" Width="75px" TextAlign="TextAlign.Center"/>
+                <RadzenDataGridColumn Property="@nameof(Anime.AnimeTitle)" Title="Anime Title" />
+                <RadzenDataGridColumn Property="@nameof(Anime.SeasonCount)" Title="Season Count" />
+            </Columns>
+        </RadzenDataGrid>
+    </RadzenStack>
+
+</RadzenStack>
+
+@code {
+    bool isLoading;
+
+    List<Anime> anime = new List<Anime>();
+    IQueryable<Anime> animeQ;
+    IList<Anime> selectedAnime;
+
+    private async Task GetAnimeList()
+    {
+        anime = await client.GetFromJsonAsync<List<Anime>>("Anime/GetAllAnime");
+        animeQ = anime.AsQueryable();
+
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await GetAnimeList();
+
+        selectedAnime = new List<Anime>() { animeQ.FirstOrDefault() };
+    }
+
+    private void OnClickAddAnime(string text)
+    {
+        NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Info, Summary = "Refreshed", Detail = text });
+    }
+
+    private void OnClickRefresh(string text)
+    {
+        NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Info, Summary = "Refreshed", Detail = text });
+    }
+}
