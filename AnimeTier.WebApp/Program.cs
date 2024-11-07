@@ -1,5 +1,10 @@
 using AnimeTier.WebApp.Components;
+using AnimeTier.WebApp.Services;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal;
+using Microsoft.Extensions.Configuration;
 using Radzen;
+using SharedLibrary.Context;
 
 namespace AnimeTier.WebApp
 {
@@ -10,16 +15,16 @@ namespace AnimeTier.WebApp
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7258/api/") });
-
-            builder.Services.AddRazorComponents().AddInteractiveServerComponents();
-
             builder.Services.AddRadzenComponents();
+            builder.Services.AddRazorComponents().AddInteractiveServerComponents();
             builder.Services.AddRadzenCookieThemeService(options =>
             {
                 options.Name = "AnimeTierListTheme"; // The name of the cookie
                 options.Duration = TimeSpan.FromDays(365); // The duration of the cookie
             });
+            builder.Services.AddDbContextFactory<AnimeTierListContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("AnimeTierDBCnnStr")));
+            builder.Services.AddScoped<AnimeService>();
 
             var app = builder.Build();
 

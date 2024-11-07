@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnimeTier.Api", "AnimeTier.Api\AnimeTier.Api.csproj", "{B1FEB8E7-B7FE-4C56-A57C-12F60F2DEE93}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnimeTier.WebApp", "AnimeTier.WebApp\AnimeTier.WebApp.csproj", "{EFEA5288-EEEF-46D9-AE00-FC638623A1AF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharedLibrary", "SharedLibrary\SharedLibrary.csproj", "{DFAF5424-6FDC-4A6E-96F1-F2FE18A75D56}"
@@ -15,10 +13,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B1FEB8E7-B7FE-4C56-A57C-12F60F2DEE93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B1FEB8E7-B7FE-4C56-A57C-12F60F2DEE93}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B1FEB8E7-B7FE-4C56-A57C-12F60F2DEE93}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B1FEB8E7-B7FE-4C56-A57C-12F60F2DEE93}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EFEA5288-EEEF-46D9-AE00-FC638623A1AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EFEA5288-EEEF-46D9-AE00-FC638623A1AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EFEA5288-EEEF-46D9-AE00-FC638623A1AF}.Release|Any CPU.ActiveCfg = Release|Any CPU

@@ -13,7 +13,7 @@ namespace AnimeTier.Api.Controllers
 
         public AnimeController (AnimeTierListContext context, IAnimeRepository animeRepo)
         {
-            _context = context;
+            _context = context; 
             _animeRepo = animeRepo;
         }
 

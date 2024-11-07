@@ -1,6 +1,9 @@
 ﻿@page "/anime"
-@inject HttpClient client
+@using SharedLibrary.Context
 @inject NotificationService NotificationService
+@inject ContextMenuService ContextMenuService
+
+@inject AnimeService AnimeService
 
 <PageTitle>Anime Tier List</PageTitle>
 
@@ -10,13 +13,13 @@
 
     <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1rem">
             <RadzenButton class="" Icon="add_circle" Text="Add Anime" ButtonStyle="ButtonStyle.Primary" />
-            <RadzenButton Click=@(args => OnClickRefresh("Anime List Refreshed.")) Icon="refresh" Text="Refresh"    ButtonStyle="ButtonStyle.Base" />
+            <RadzenButton Click=@(args => OnClickRefresh("Anime List Refreshed.")) Icon="refresh" Text="Refresh" IsBusy="@isRefreshing" ButtonStyle="ButtonStyle.Base" />
     </RadzenStack>
     
     <RadzenStack>
-        <RadzenDataGrid @bind-Value=@selectedAnime KeyProperty="Id" Data="@animeQ" AllowAlternatingRows="true"      FilterMode="FilterMode.Simple" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"        FilterPopupRenderMode="PopupRenderMode.OnDemand" AllowSorting="true" AllowFiltering="true" AllowPaging="true"      PageSize="10" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"     LogicalFilterOperator="LogicalFilterOperator.Or">
+        <RadzenDataGrid @bind-Value=@selectedAnime KeyProperty="Id" Data="@anime" AllowAlternatingRows="true"      FilterMode="FilterMode.Simple" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"        FilterPopupRenderMode="PopupRenderMode.OnDemand" AllowSorting="true" AllowFiltering="true" AllowPaging="true" PageSize="10" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"     LogicalFilterOperator="LogicalFilterOperator.Or" IsLoading="@isRefreshing">
             <Columns>
-                <RadzenDataGridColumn Property="@nameof(Anime.Id)" Title="ID" Width="75px" TextAlign="TextAlign.Center"/>
+                <RadzenDataGridColumn Property="@nameof(Anime.Id)" Title="ID" Width="75px" TextAlign="TextAlign.Center" Frozen="true" />
                 <RadzenDataGridColumn Property="@nameof(Anime.AnimeTitle)" Title="Anime Title" />
                 <RadzenDataGridColumn Property="@nameof(Anime.SeasonCount)" Title="Season Count" />
             </Columns>
@@ -26,34 +29,62 @@
 </RadzenStack>
 
 @code {
-    bool isLoading;
+    AnimeTierListContext animeTierListContext;
+    bool isRefreshing = false;
 
-    List<Anime> anime = new List<Anime>();
-    IQueryable<Anime> animeQ;
+    ODataEnumerable<Anime> anime;
     IList<Anime> selectedAnime;
 
-    private async Task GetAnimeList()
+    private async Task LoadData()
     {
-        anime = await client.GetFromJsonAsync<List<Anime>>("Anime/GetAllAnime");
-        animeQ = anime.AsQueryable();
+        isRefreshing = true;
+
+        var result = await AnimeService.GetAnimesAsync();
+        anime = result.AsODataEnumerable();
+        selectedAnime = new List<Anime>() { anime.FirstOrDefault() };
+
+        isRefreshing = false;
+
 
     }
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        await GetAnimeList();
-
-        selectedAnime = new List<Anime>() { animeQ.FirstOrDefault() };
+        await LoadData();
     }
 
     private void OnClickAddAnime(string text)
     {
-        NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Info, Summary = "Refreshed", Detail = text });
+        NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Info, Summary = "Modal Popup", Detail = text });
     }
 
-    private void OnClickRefresh(string text)
+    private async void OnClickRefresh(string text)
     {
-        NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Info, Summary = "Refreshed", Detail = text });
+        try
+        {
+            await LoadData();
+        }
+        catch
+        {
+            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = "Error", Detail = "There was a problem and data failed to refresh."});
+            isRefreshing = false;
+        }
+
+        NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Refreshed", Detail = text });
     }
+
+    void OnCellContextMenu(DataGridCellMouseEventArgs<Anime> args)
+    {
+        selectedAnime = new List<Anime>() { args.Data };
+
+        ContextMenuService.Open(args,
+            new List<ContextMenuItem> {
+                new ContextMenuItem(){ Text = "Edit", Value = 1, Icon = "edit" },
+                new ContextMenuItem(){ Text = "Delete", Value = 2, Icon = "delete" },
+                }
+         );
+    }
+
+
 }

@@ -27,9 +27,13 @@
     </RadzenBody>
 
     <RadzenFooter >
-         Lien Font &copy;
-        <RadzenLabel Text="Change the current theme" />
-        <RadzenDropDown Name="ThemeDropDown" TValue="string" Value="@ThemeService.Theme" ValueChanged="@ChangeTheme" Data="@Themes.Free" TextProperty=@nameof(Theme.Text) ValueProperty=@nameof(Theme.Value)/>
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween" AlignItems="AlignItems.Center">
+            Lien Font &copy; @DateTime.Now.Year
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
+            <RadzenLabel Text="Change the current theme" />
+            <RadzenDropDown Name="ThemeDropDown" TValue="string" Value="@ThemeService.Theme" ValueChanged="@ChangeTheme" Data="@Themes.Free" TextProperty=@nameof(Theme.Text) ValueProperty=@nameof(Theme.Value)/>
+         </RadzenStack>
+        </RadzenStack>
     </RadzenFooter>
 </RadzenLayout>
 
